@@ -49,20 +49,60 @@ class Player:
         self.count += card.get_volue()
 
 
+class Dealer(Player):
+    def get_card(self, cards: DeskCard):
+        while self.count < 18:
+            self.hand = cards.get_card()
+        
 class Game:
     def __init__(self, player_name: str) -> None:
         self.cards = DeskCard()
         self.player = Player(name=player_name)
+        self.dealer = Dealer('Dealer')
         
+    def print(self) -> str:
+        return f'\n{self.player.name}:\n{self.player.hand}\n{self.dealer.name}:\n{self.dealer.hand}'
+    
+    def check_count(self) -> None:
+        if self.player.count > 21:
+            print(f'Вы проиграли!', self.print())
         
+        elif self.dealer.count > 21 and self.player.count <= 21:
+            print(f'Вы выиграли!', self.print())
+        
+        elif self.player.count == self.dealer.count:
+            print(f'Ничья!', self.print())
+            
+        elif self.dealer.count > self.player.count:
+            print(f'Вы проиграли!', self.print())
+            
+        elif self.dealer.count < self.player.count:
+            print(f'Вы выиграли!', self.print())
+            
     def start(self):
         self.player.hand = self.cards.get_card()
         self.player.hand = self.cards.get_card()
         print(self.player.hand)
+        
+        self.dealer.hand = self.cards.get_card()
+        self.dealer.hand = self.cards.get_card()
+        
+        while self.player.count < 21:
+    
+            answer = input('Do you want to take one card Yes(y)/No(n)')
+            if answer == 'y':
+                self.player.hand = self.cards.get_card()
+                print(self.player.hand)
+                
+            elif answer == 'n':
+                self.dealer.get_card(self.cards)
+                break
+        
+        self.check_count()
 
 
 def main() -> None:
-    game = Game(input('your name: '))
+    game = Game('Vlad')
     game.start()
 
 
