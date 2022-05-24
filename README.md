@@ -1,2 +1,2 @@
 # black_jack
-Black Jach game
+Black Jack game
