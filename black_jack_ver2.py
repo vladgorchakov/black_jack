@@ -14,7 +14,7 @@ class Card:
         elif self.rank == 'Т':
             return (1, 11)
         else:
-            return ['2', '3', '4', '5', '6', '7', '8', '9', '10'].index(rank) + 2
+            return ['2', '3', '4', '5', '6', '7', '8', '9', '10'].index(self.rank) + 2
         
         
     def __repr__(self):
@@ -39,7 +39,7 @@ class CardDeck:
         return self.__cards.pop()
     
     
-    def set_card(self, card):
+    def set_card(self, card: Card):
         self.__cards.append(card)
         return self.__cards[-1]
     
@@ -49,10 +49,43 @@ class CardDeck:
         return self.__cards
 
 
+"""This class create player"""
+class Player:
+    def __init__(self, name) -> None:
+        self.__name = name
+        self.__hand = []
+        self.__count = 0
+     
+     
+    def get_card(self):
+        return self.__hand
+    
+    
+    def set_card(self, card: Card) -> None:
+        self.__hand.append(card)
+        self.__count += card.get_value()
+        
+    
+    def remove_cards(self):
+        self.__hand.clear()
+        self.__count = 0
+        return self
+    
+    
+    def show_info(self):
+        return f'{self.__name}: {self.__hand} {self.__count}'
+    
+    
+    def __repr__(self):
+        return self.show_info()
+    
+    
+    cards = property(get_card, set_card)
+    
+
 c = CardDeck()
 c.create_deck()
-card = c.get_card()
 print(*c.cards)
-card = c.set_card(card)
-del card
-print(*c.cards)
+vlad = Player('Vlad')
+vlad.cards = c.get_card()
+print(vlad.cards)
