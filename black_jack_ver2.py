@@ -32,21 +32,20 @@ class CardDeck:
     def create_deck(self) -> None:
         self.__cards = [Card(rank, suit) for rank in self.__ranks for suit in self.__suits]
         shuffle(self.__cards)
-        return self.__cards
     
     
     def get_card(self) -> Card:
         return self.__cards.pop()
     
     
-    def set_card(self, card: Card):
+    def set_card(self, card: Card) -> None:
         self.__cards.append(card)
-        return self.__cards[-1]
-    
+
     
     @property
     def cards(self):
         return self.__cards
+    
 
 
 """This class create player"""
@@ -62,9 +61,17 @@ class Player:
     
     
     def set_card(self, card: Card) -> None:
-        self.__hand.append(card)
-        self.__count += card.get_value()
+        if card.rank == 'Т':
+            if self.__count <=10:
+                self.__count += card.get_value()[1]
+            else:
+                self.__count += card.get_value()[0]
         
+        else:
+            self.__count += card.get_value()
+        
+        self.__hand.append(card)
+            
     
     def remove_cards(self):
         self.__hand.clear()
@@ -73,19 +80,54 @@ class Player:
     
     
     def show_info(self):
-        return f'{self.__name}: {self.__hand} {self.__count}'
+        return f'\n*{self.__name}*: {self.__hand} {self.__count};\n'
     
     
     def __repr__(self):
         return self.show_info()
     
     
+    @property
+    def name(self):
+        return self.__name
+    
+    
+    @property
+    def count(self):
+        return self.__count
+    
     cards = property(get_card, set_card)
     
 
-c = CardDeck()
-c.create_deck()
-print(*c.cards)
-vlad = Player('Vlad')
-vlad.cards = c.get_card()
-print(vlad.cards)
+class Game:
+    def __init__(self, player_name: str) -> None:
+        self.player = Player(player_name)
+        self.card_deck = CardDeck()
+
+
+    def start(self) -> None:
+        print(f'Hello, {self.player.name}!')
+        self.card_deck.create_deck()
+        self.player.cards = self.card_deck.get_card()
+        self.player.cards = self.card_deck.get_card()
+        
+        print(self.player)
+        while self.player.count < 21:
+            ans = input('Do you want to take new card (y/n): ').lower()
+            if ans == 'y':
+                self.player.cards = self.card_deck.get_card()
+                print(self.player)
+            
+            elif ans == 'n':
+                break
+            
+        if self.player.count == 21:
+            print('You are winner!')
+            
+        
+        
+
+
+game = Game('Vlad')
+game.start()
+
