@@ -60,13 +60,16 @@ class Player:
         return self.__hand
     
     
+    def choose_ace_value(self, card: Card) -> int:
+        if self.__count <=10:
+            return card.get_value()[1]
+        else:
+            return card.get_value()[0]
+        
+    
     def set_card(self, card: Card) -> None:
         if card.rank == 'Т':
-            if self.__count <=10:
-                self.__count += card.get_value()[1]
-            else:
-                self.__count += card.get_value()[0]
-        
+            self.__count += self.choose_ace_value(card)
         else:
             self.__count += card.get_value()
         
@@ -99,17 +102,27 @@ class Player:
     cards = property(get_card, set_card)
     
 
+class Dealer(Player):
+    pass
+    
+
 class Game:
     def __init__(self, player_name: str) -> None:
         self.player = Player(player_name)
         self.card_deck = CardDeck()
+        self.dealer = Dealer('Dealer')
 
 
     def start(self) -> None:
         print(f'Hello, {self.player.name}!')
         self.card_deck.create_deck()
+        
         self.player.cards = self.card_deck.get_card()
         self.player.cards = self.card_deck.get_card()
+        
+        self.dealer.cards = self.card_deck.get_card()
+        self.dealer.cards = self.card_deck.get_card()
+        
         
         print(self.player)
         while self.player.count < 21:
@@ -125,9 +138,5 @@ class Game:
             print('You are winner!')
             
         
-        
-
-
 game = Game('Vlad')
 game.start()
-
