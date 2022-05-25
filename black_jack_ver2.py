@@ -106,7 +106,7 @@ class Player:
 class Dealer(Player):
         
     def make_choice(self) -> bool:
-        if self.__count < 18:
+        if self._Player__count < 18:
             return True
         else:
             return False
@@ -139,16 +139,18 @@ class Game:
                 print(self.player)
             
             elif ans == 'n':
-                if self.dealer.make_choice():
+                while self.dealer.make_choice():
                     self.dealer.hand = self.card_deck.get_card()
+                break
             
             
         if self.player.count == 21:
             print('You are winner!')
         elif self.player.count > 21:
-            print('Перебор!')
+            print(f'Перебор!')
             
-        print(self.dealer.count)
+        print(self.player)    
+        print(self.dealer)
         
         
 game = Game('Vlad')
