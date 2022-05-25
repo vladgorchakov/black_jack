@@ -51,64 +51,52 @@ class CardDeck:
 """This class create player"""
 class Player:
     def __init__(self, name) -> None:
-        self.__name = name
-        self.__hand = []
-        self.__count = 0
-        print('whoami')
-     
-     
-    def get_card(self):
-        return self.__hand
-    
-    
+        self.name = name
+        self.hand = []
+        self.count = 0
+        
+        
     def choose_ace_value(self, card: Card) -> int:
-        if self.__count <=10:
+        if self.count <=10:
             return card.get_value()[1]
         else:
             return card.get_value()[0]
-        
+     
+     
+    @property 
+    def cards(self):
+        return self.hand
     
-    def set_card(self, card: Card) -> None:
+    @cards.setter
+    def cards(self, card: Card) -> None:
         if card.rank == 'Т':
-            self.__count += self.choose_ace_value(card)
+            self.count += self.choose_ace_value(card)
         else:
-            self.__count += card.get_value()
+            self.count += card.get_value()
         
-        self.__hand.append(card)
-            
+        self.hand.append(card)        
     
     def remove_cards(self):
-        self.__hand.clear()
-        self.__count = 0
+        self.hand.clear()
+        self.count = 0
         return self
     
     
     def show_info(self):
-        return f'\n*{self.__name}*: {self.__hand} {self.__count};\n'
-    
+        return f'\n*{self.name}*: {self.hand} {self.count};\n'
     
     def __repr__(self):
         return self.show_info()
-    
-    
-    @property
-    def name(self):
-        return self.__name
-    
-    
-    @property
-    def count(self):
-        return self.__count
-    
-    hand = property(get_card, set_card)
     
 
 class Dealer(Player):
         
     def make_choice(self) -> bool:
-        if self.__count < 18:
+        if self.count < 18:
+            print('Беру!')
             return True
         else:
+            print('Не беру!')
             return False
     
 
@@ -118,37 +106,50 @@ class Game:
         self.card_deck = CardDeck()
         self.dealer = Dealer('Dealer')
         print(self.dealer.__dict__)
+    
+    
+    def print(self) -> str:
+        return f'\n{self.player.name}:\n{self.player.hand}\n{self.player.count}\n{self.dealer.name}:\n{self.dealer.hand}\n{self.dealer.count}'
+    
+    def check_count(self) -> None:
+        if self.player.count > 21:
+            print(f'Вы проиграли!', self.print())
+        
+        elif self.dealer.count > 21 and self.player.count <= 21:
+            print(f'Вы выиграли!', self.print())
+        
+        elif self.player.count == self.dealer.count:
+            print(f'Ничья!', self.print())
+            
+        elif self.dealer.count > self.player.count:
+            print(f'Вы проиграли!', self.print())
+            
+        elif self.dealer.count < self.player.count:
+            print(f'Вы выиграли!', self.print())
 
 
     def start(self) -> None:
         print(f'Hello, {self.player.name}!')
         self.card_deck.create_deck()
         
-        self.player.hand = self.card_deck.get_card()
-        self.player.hand = self.card_deck.get_card()
-        
-        self.dealer.hand = self.card_deck.get_card()
-        self.dealer.hand = self.card_deck.get_card()
-        
+        for i in range(2):
+            self.player.cards = self.card_deck.get_card()
+            self.dealer.cards = self.card_deck.get_card()
+            
         
         print(self.player)
         while self.player.count < 21:
             ans = input('Do you want to take new card (y/n): ').lower()
             if ans == 'y':
-                self.player.hand = self.card_deck.get_card()
+                self.player.cards = self.card_deck.get_card()
                 print(self.player)
             
             elif ans == 'n':
-                if self.dealer.make_choice():
-                    self.dealer.hand = self.card_deck.get_card()
-            
-            
-        if self.player.count == 21:
-            print('You are winner!')
-        elif self.player.count > 21:
-            print('Перебор!')
-            
-        print(self.dealer.count)
+                while self.dealer.make_choice():
+                    self.dealer.cards = self.card_deck.get_card()
+                break
+                    
+        self.check_count()
         
         
 game = Game('Vlad')
