@@ -46,6 +46,7 @@ class CardDeck:
     def cards(self):
         return self.__cards
     
+    
 
 
 """This class create player"""
@@ -54,6 +55,8 @@ class Player:
         self.name = name
         self.hand = []
         self.count = 0
+        self.total_games = 0
+        self.win_games = 0
         
         
     def choose_ace_value(self, card: Card) -> int:
@@ -61,7 +64,6 @@ class Player:
             return card.get_value()[1]
         else:
             return card.get_value()[0]
-     
      
     @property 
     def cards(self):
@@ -98,24 +100,27 @@ class Dealer(Player):
         else:
             print('Не беру!')
             return False
-    
 
 class Game:
     def __init__(self, player_name: str) -> None:
         self.player = Player(player_name)
         self.card_deck = CardDeck()
         self.dealer = Dealer('Dealer')
-        print(self.dealer.__dict__)
     
     
     def print(self) -> str:
-        return f'\n{self.player.name}:\n{self.player.hand}\n{self.player.count}\n{self.dealer.name}:\n{self.dealer.hand}\n{self.dealer.count}'
+        return f'\n{self.player.name}:{self.player.hand} = {self.player.count}\n{self.dealer.name}:{self.dealer.hand} = {self.dealer.count}'
+    
     
     def check_count(self) -> None:
+        self.player.total_games += 1
+        
+        print(f'\n*Результаты игры: {self.player.total_games}*')
         if self.player.count > 21:
             print(f'Вы проиграли!', self.print())
         
         elif self.dealer.count > 21 and self.player.count <= 21:
+            self.player.win_games += 1
             print(f'Вы выиграли!', self.print())
         
         elif self.player.count == self.dealer.count:
@@ -125,31 +130,54 @@ class Game:
             print(f'Вы проиграли!', self.print())
             
         elif self.dealer.count < self.player.count:
+            self.player.win_games += 1
             print(f'Вы выиграли!', self.print())
+    
+    
+    def new_game(self):
+        for card in self.player.cards + self.dealer.cards:
+            self.card_deck.set_card(card)
+            
+        self.player.remove_cards()
+        self.dealer.remove_cards()
+        self.card_deck.create_deck()
+    
+    
+    def show_stat(self):
+        print(f'\n*Результаты ваших игр:*')
+        print(f'*Всего игр: {self.player.total_games}*')
+        print(f'*Побед: {self.player.win_games}*')
 
 
     def start(self) -> None:
         print(f'Hello, {self.player.name}!')
         self.card_deck.create_deck()
-        
-        for i in range(2):
-            self.player.cards = self.card_deck.get_card()
-            self.dealer.cards = self.card_deck.get_card()
+        while True:
             
-        
-        print(self.player)
-        while self.player.count < 21:
-            ans = input('Do you want to take new card (y/n): ').lower()
-            if ans == 'y':
+            for i in range(2):
                 self.player.cards = self.card_deck.get_card()
-                print(self.player)
+                self.dealer.cards = self.card_deck.get_card()           
             
-            elif ans == 'n':
-                while self.dealer.make_choice():
-                    self.dealer.cards = self.card_deck.get_card()
-                break
-                    
-        self.check_count()
+            print(f'Ваши карты: {self.player.cards} = {self.player.count}\n')
+            while self.player.count < 21:
+                ans = input('Взять ещё одну карту (y/n): ').lower()
+                if ans == 'y':
+                    self.player.cards = self.card_deck.get_card()
+                    print(f'Ваши карты: {self.player.cards} = {self.player.count}\n')
+                
+                elif ans == 'n':
+                    while self.dealer.make_choice():
+                        self.dealer.cards = self.card_deck.get_card()
+                    break
+            
+            self.check_count()
+            
+            ans = input('\nНачать новую игру (y)/(n): ')
+            if ans == 'y':
+                self.new_game()
+            else:
+                self.show_stat()
+                break  
         
         
 game = Game('Vlad')
