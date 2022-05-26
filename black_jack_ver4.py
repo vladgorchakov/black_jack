@@ -57,7 +57,6 @@ class Player:
         else:
             return card.get_value()[0]
      
-     
     @property 
     def cards(self):
         return self.hand
@@ -99,15 +98,16 @@ class Game:
         self.player = Player(player_name)
         self.card_deck = CardDeck()
         self.dealer = Dealer('Dealer')
-        print(self.dealer.__dict__)
     
     
     def print(self) -> str:
-        return f'\n{self.player.name}:\n{self.player.hand}\n{self.player.count}\n{self.dealer.name}:\n{self.dealer.hand}\n{self.dealer.count}'
+        return f'\n{self.player.name}:{self.player.hand} = {self.player.count}\n{self.dealer.name}:{self.dealer.hand} = {self.dealer.count}'
+    
     
     def check_count(self) -> None:
         self.player.total_games += 1
         
+        print(f'\n*Результаты игры: {self.player.total_games}*')
         if self.player.count > 21:
             print(f'Вы проиграли!', self.print())
         
@@ -125,25 +125,33 @@ class Game:
             self.player.win_games += 1
             print(f'Вы выиграли!', self.print())
     
+    
     def new_game(self):
         self.player.remove_cards()
         self.dealer.remove_cards()
         self.card_deck = CardDeck()
+        
+        
+    def show_stat(self):
+        print(f'\n*Результаты ваших игр:*')
+        print(f'*Всего игр: {self.player.total_games}*')
+        print(f'*Побед: {self.player.win_games}*')
+
 
     def start(self) -> None:
+        print(f'Hello, {self.player.name}!')
         while True:
-            print(f'Hello, {self.player.name}!')
             
             for i in range(2):
                 self.player.cards = next(self.card_deck)
                 self.dealer.cards = next(self.card_deck)            
             
-            print(self.player)
+            print(f'Ваши карты: {self.player.cards} = {self.player.count}\n')
             while self.player.count < 21:
-                ans = input('Do you want to take new card (y/n): ').lower()
+                ans = input('Взять ещё одну карту (y/n): ').lower()
                 if ans == 'y':
                     self.player.cards = next(self.card_deck)
-                    print(self.player)
+                    print(f'Ваши карты: {self.player.cards} = {self.player.count}\n')
                 
                 elif ans == 'n':
                     while self.dealer.make_choice():
@@ -152,12 +160,11 @@ class Game:
             
             self.check_count()
             
-            ans = input('Do you want start new game (y)/(n): ')
+            ans = input('\nНачать новую игру (y)/(n): ')
             if ans == 'y':
                 self.new_game()
             else:
-                print(f'Total games: {self.player.total_games}')
-                print(f'Win games: {self.player.win_games}')
+                self.show_stat()
                 break  
         
         
