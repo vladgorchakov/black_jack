@@ -1,2 +1,0 @@
-1)create iterabile object form CardDeck.
-I can uses next() function or self.__next__() when I want to get new card from Card deck. 

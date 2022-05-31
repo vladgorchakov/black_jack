@@ -97,7 +97,7 @@ class Game:
     def __init__(self, player_name: str) -> None:
         self.player = Player(player_name)
         self.card_deck = CardDeck()
-        self.dealer = Dealer('Dealer')
+        self.dealer = Dealer('Дилер')
     
     
     def print(self) -> str:
@@ -164,9 +164,4 @@ class Game:
             if ans == 'y':
                 self.new_game()
             else:
-                self.show_stat()
-                break  
-        
-        
-game = Game('Vlad')
-game.start()
+                break
